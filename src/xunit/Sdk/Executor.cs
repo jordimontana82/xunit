@@ -144,10 +144,15 @@ namespace Xunit.Sdk
 
                 executor.RunOnSTAThreadWithPreservedWorkingDirectory(() =>
                     {
+                        try
+                        {
+
+                        
                         bool @continue = true;
                         AssemblyResult results =
                             new AssemblyResult(executor.assemblyFilename,
                                                AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+
 
                         foreach (Type type in executor.assembly.GetExportedTypes())
                         {
@@ -169,6 +174,12 @@ namespace Xunit.Sdk
                         }
 
                         OnTestResult(results, handler);
+
+                        }
+                        catch (ReflectionTypeLoadException rex)
+                        {
+                            throw new ReflectionTypeLoadException(rex.Types, rex.LoaderExceptions, "Testing... " + rex.Message);
+                        }
                     });
             }
 
